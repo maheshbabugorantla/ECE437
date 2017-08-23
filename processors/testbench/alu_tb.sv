@@ -68,8 +68,16 @@ program test(input logic clk, alu_if.tb alu_tb);
 
 		@(posedge clk);
 		@(negedge clk);
-
-		$display("Output Port %h",alu_tb.outputPort);
+		
+		// Check the Output
+		if(alu_tb.outputPort == 32'h40404040)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
 
 		@(negedge clk);
 		@(posedge clk);
@@ -85,7 +93,16 @@ program test(input logic clk, alu_if.tb alu_tb);
 		@(posedge clk);
 		@(negedge clk);
 
-		$display("Output Port %h",alu_tb.outputPort);
+		if(alu_tb.outputPort == 32'h04040404)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		// $display("Output Port %h",alu_tb.outputPort);
 
 		@(negedge clk);
 		@(posedge clk);
@@ -101,11 +118,63 @@ program test(input logic clk, alu_if.tb alu_tb);
 		@(posedge clk);
 		@(negedge clk);
 
-		$display("Output Port %h",alu_tb.outputPort);
+		if(alu_tb.outputPort == 32'h20202020)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
 
 		@(negedge clk);
 		@(posedge clk);
 
+		// ALU ADD with Overflow
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'h8FFFFFFF;
+		alu_tb.aluOp = ALU_ADD;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'h1FFFFFFE)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
+
+		// ALU ADD with Overflow and Negation
+		test_case_num += 1;
+
+		alu_tb.portA = 32'hFFFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_ADD;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'hFFFFFFFE)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+
+		@(negedge clk);
+		@(posedge clk);
+		
 		// ALU_SUB
 		test_case_num += 1;
 
@@ -116,25 +185,216 @@ program test(input logic clk, alu_if.tb alu_tb);
 		@(posedge clk);
 		@(negedge clk);
 
-		$display("Output Port %h",alu_tb.outputPort);
+		if(alu_tb.outputPort == 32'h00000000)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
+
+		// ALU_SUB with Overflow and Negative Result
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_SUB;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'h90000000)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
 
 		@(negedge clk);
 		@(posedge clk);
 
 		// ALU_AND
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_AND;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'h8FFFFFFF)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
 
 		// ALU_OR
-	
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_OR;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'hFFFFFFFF)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
+
 		// ALU_XOR
-	
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_XOR;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'h70000000)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
 
 		// ALU_NOR
-	
+		test_case_num += 1;
 
-		// ALU_SLT
-	
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_NOR;
 
-		// ALU_SLTU
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort == 32'h8FFFFFFF)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
+
+		// ALU_SLT (TRUE Output)
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_SLT;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort[0] == 1'b1)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);	
+
+		// ALU_SLTU (TRUE Output)
+		test_case_num += 1;
+
+		alu_tb.portA = 32'h8FFFFFFF;
+		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.aluOp = ALU_SLTU;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort[0] == 1'b1)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
+
+		// ALU_SLT (TRUE Output)
+		test_case_num += 1;
+
+		alu_tb.portA = 32'hFFFFFFFF;
+		alu_tb.portB = 32'h8FFFFFFF;
+		alu_tb.aluOp = ALU_SLT;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort[0] == 1'b0)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);	
+
+		// ALU_SLTU (FALSE Output)
+		test_case_num += 1;
+
+		alu_tb.portA = 32'hFFFFFFFF;
+		alu_tb.portB = 32'h8FFFFFFF;
+		alu_tb.aluOp = ALU_SLTU;
+
+		@(posedge clk);
+		@(negedge clk);
+
+		if(alu_tb.outputPort[0] == 1'b0)
+		begin
+			$display("TestCase #%0d Passed", test_case_num);
+		end
+		else
+		begin
+			$display("TestCase #%0d Failed", test_case_num);
+		end
+
+		@(negedge clk);
+		@(posedge clk);
+
 		$finish;
 	end
 
