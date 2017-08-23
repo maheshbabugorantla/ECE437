@@ -17,3 +17,5 @@ modelsim.ini
 */*~
 *.bak
 */*.bak
+
+*.summary
