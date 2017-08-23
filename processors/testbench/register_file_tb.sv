@@ -42,8 +42,8 @@ module register_file_tb;
     .\my_rf.rsel1 (rfif.rsel1),
     .\my_rf.wsel (rfif.wsel),
     .\my_rf.WEN (rfif.WEN),
-    .\nRST (nRST),
-    .\CLK (CLK)
+    .\n_rst (nRST),
+    .\clk (CLK)
   );
 `endif
 
@@ -139,6 +139,27 @@ program test(input logic clk, output logic nRst, register_file_if.tb tb_reg_file
     @(posedge clk);
 
     if(tb_reg_file.rdat1 == 32'h10101010 && tb_reg_file.rdat2 == 32'h10101010)
+    begin
+      $display("Test Case #%0d Passed", test_case_num); 
+    end
+    else
+    begin
+      $display("Test Case #%0d Failed", test_case_num);
+    end
+
+    // Test 5
+    @(posedge clk);
+    nRst = 1'b1;
+    @(negedge clk)
+    tb_reg_file.WEN = 1'b1;
+    tb_reg_file.wsel = 5'b00000;
+    tb_reg_file.rsel1 = 5'b00000;
+    tb_reg_file.rsel2 = 5'b00000;
+    tb_reg_file.wdat = 32'h10101010;
+    @(posedge clk);
+    @(posedge clk);
+
+    if(tb_reg_file.rdat1 == 32'h00000000 && tb_reg_file.rdat2 == 32'h00000000)
     begin
       $display("Test Case #%0d Passed", test_case_num); 
     end

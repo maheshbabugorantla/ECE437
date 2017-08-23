@@ -46,7 +46,7 @@ module alu_tb;
 	    .\my_alu.aluOp (alu_dut.aluOp),
 	    .\my_alu.zero (alu_dut.zero),
 	    .\my_alu.negative (alu_dut.negative),
-	    .\my_alu.overflow (alu_dut.overflow),
+	    .\my_alu.overflow (alu_dut.overflow)
 	  );
 	`endif
 
@@ -152,7 +152,7 @@ program test(input logic clk, alu_if.tb alu_tb);
 		@(negedge clk);
 		@(posedge clk);
 
-		// ALU ADD with Overflow and Negation
+		// ALU ADD Negation
 		test_case_num += 1;
 
 		alu_tb.portA = 32'hFFFFFFFF;
@@ -197,7 +197,7 @@ program test(input logic clk, alu_if.tb alu_tb);
 		@(negedge clk);
 		@(posedge clk);
 
-		// ALU_SUB with Overflow and Negative Result
+		// ALU_SUB Negative Result
 		test_case_num += 1;
 
 		alu_tb.portA = 32'h8FFFFFFF;
@@ -295,7 +295,7 @@ program test(input logic clk, alu_if.tb alu_tb);
 		@(posedge clk);
 		@(negedge clk);
 
-		if(alu_tb.outputPort == 32'h8FFFFFFF)
+		if(alu_tb.outputPort == 32'h00000000)
 		begin
 			$display("TestCase #%0d Passed", test_case_num);
 		end
@@ -310,8 +310,8 @@ program test(input logic clk, alu_if.tb alu_tb);
 		// ALU_SLT (TRUE Output)
 		test_case_num += 1;
 
-		alu_tb.portA = 32'h8FFFFFFF;
-		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.portA = -5; //32'h8FFFFFFF;
+		alu_tb.portB = 3; //32'hFFFFFFFF;
 		alu_tb.aluOp = ALU_SLT;
 
 		@(posedge clk);
@@ -332,8 +332,8 @@ program test(input logic clk, alu_if.tb alu_tb);
 		// ALU_SLTU (TRUE Output)
 		test_case_num += 1;
 
-		alu_tb.portA = 32'h8FFFFFFF;
-		alu_tb.portB = 32'hFFFFFFFF;
+		alu_tb.portA = 3; //32'h8FFFFFFF;
+		alu_tb.portB = 5; // 32'hFFFFFFFF;
 		alu_tb.aluOp = ALU_SLTU;
 
 		@(posedge clk);

@@ -25,7 +25,7 @@ module register_file
 		begin
 			registerArray <= '{default:0};
 		end
-		else if(my_rf.WEN == 1'b1)
+		else if(my_rf.WEN == 1'b1 && my_rf.wsel != 0)
 		begin
 			registerArray[my_rf.wsel] <= my_rf.wdat;
 		end
