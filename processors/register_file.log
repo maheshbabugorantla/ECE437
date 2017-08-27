@@ -1,5 +1,5 @@
 Design Assistant report for register_file
-Wed Aug 23 17:54:17 2017
+Sun Aug 27 19:42:30 2017
 Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
 
 
@@ -37,7 +37,7 @@ applicable agreement for further details.
 +-------------------------------------------------------------------------+
 ; Design Assistant Summary                                                ;
 +-----------------------------------+-------------------------------------+
-; Design Assistant Status           ; Analyzed - Wed Aug 23 17:54:17 2017 ;
+; Design Assistant Status           ; Analyzed - Sun Aug 27 19:42:30 2017 ;
 ; Revision Name                     ; register_file                       ;
 ; Top-level Entity Name             ; register_file                       ;
 ; Family                            ; Cyclone IV E                        ;
@@ -226,7 +226,7 @@ Info: Running Quartus II 64-Bit Design Assistant
     Info: programming logic devices manufactured by Altera and sold by 
     Info: Altera or its authorized distributors.  Please refer to the 
     Info: applicable agreement for further details.
-    Info: Processing started: Wed Aug 23 17:54:16 2017
+    Info: Processing started: Sun Aug 27 19:42:29 2017
 Info: Command: quartus_drc register_file -c register_file
 Info (332104): Reading SDC File: 'register_file.sdc'
 Warning (332174): Ignored filter at register_file.sdc(1): CLK could not be matched with a port
@@ -314,14 +314,14 @@ Info (308044): (Information) Rule T102: Top nodes with the highest number of fan
     Info (308002): Truncated list of Design Assistant messages to 30 messages. Go to sections under Design Assistant section of Compilation Report for complete lists of Design Assistant messages generated.
 Info (308007): Design Assistant information: finished post-fitting analysis of current design -- generated 83 information messages and 1 warning messages
 Info: Quartus II 64-Bit Design Assistant was successful. 0 errors, 12 warnings
-    Info: Peak virtual memory: 859 megabytes
-    Info: Processing ended: Wed Aug 23 17:54:17 2017
+    Info: Peak virtual memory: 858 megabytes
+    Info: Processing ended: Sun Aug 27 19:42:30 2017
     Info: Elapsed time: 00:00:01
     Info: Total CPU time (on all processors): 00:00:01
 
 
 EDA Netlist Writer report for register_file
-Wed Aug 23 17:54:25 2017
+Sun Aug 27 19:42:39 2017
 Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
 
 
@@ -358,7 +358,7 @@ applicable agreement for further details.
 +-------------------------------------------------------------------+
 ; EDA Netlist Writer Summary                                        ;
 +---------------------------+---------------------------------------+
-; EDA Netlist Writer Status ; Successful - Wed Aug 23 17:54:25 2017 ;
+; EDA Netlist Writer Status ; Successful - Sun Aug 27 19:42:39 2017 ;
 ; Revision Name             ; register_file                         ;
 ; Top-level Entity Name     ; register_file                         ;
 ; Family                    ; Cyclone IV E                          ;
@@ -415,18 +415,18 @@ Info: Running Quartus II 64-Bit EDA Netlist Writer
     Info: programming logic devices manufactured by Altera and sold by 
     Info: Altera or its authorized distributors.  Please refer to the 
     Info: applicable agreement for further details.
-    Info: Processing started: Wed Aug 23 17:54:24 2017
+    Info: Processing started: Sun Aug 27 19:42:38 2017
 Info: Command: quartus_eda register_file -c register_file
 Info (204019): Generated file register_file.vo in folder "/home/ecegrid/a/mg226/ECE437_Labs/processors/._register_file/simulation/modelsim/" for EDA simulation tool
 Info: Quartus II 64-Bit EDA Netlist Writer was successful. 0 errors, 0 warnings
     Info: Peak virtual memory: 926 megabytes
-    Info: Processing ended: Wed Aug 23 17:54:25 2017
+    Info: Processing ended: Sun Aug 27 19:42:39 2017
     Info: Elapsed time: 00:00:01
     Info: Total CPU time (on all processors): 00:00:01
 
 
 Fitter report for register_file
-Wed Aug 23 17:54:14 2017
+Sun Aug 27 19:42:26 2017
 Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
 
 
@@ -495,7 +495,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------------------------------+
 ; Fitter Summary                                                                        ;
 +------------------------------------+--------------------------------------------------+
-; Fitter Status                      ; Successful - Wed Aug 23 17:54:14 2017            ;
+; Fitter Status                      ; Successful - Sun Aug 27 19:42:26 2017            ;
 ; Quartus II 64-Bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Full Version ;
 ; Revision Name                      ; register_file                                    ;
 ; Top-level Entity Name              ; register_file                                    ;
@@ -576,16 +576,16 @@ applicable agreement for further details.
 +----------------------------+-------------+
 ; Processors                 ; Number      ;
 +----------------------------+-------------+
-; Number detected on machine ; 8           ;
+; Number detected on machine ; 40          ;
 ; Maximum allowed            ; 4           ;
 ;                            ;             ;
-; Average used               ; 1.64        ;
+; Average used               ; 1.71        ;
 ; Maximum used               ; 4           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processors 2-4         ;  21.4%      ;
-;     Processors 5-8         ;   0.0%      ;
+;     Processors 2-4         ;  23.8%      ;
+;     Processors 5-40        ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -9891,32 +9891,32 @@ Warning (15705): Ignored locations or region assignments to the following nodes
     Warning (15706): Node "VGA_R[7]" is assigned to location or region, but does not exist in design
     Warning (15706): Node "VGA_SYNC_N" is assigned to location or region, but does not exist in design
     Warning (15706): Node "VGA_VS" is assigned to location or region, but does not exist in design
-Info (171121): Fitter preparation operations ending: elapsed time is 00:00:03
+Info (171121): Fitter preparation operations ending: elapsed time is 00:00:04
 Info (170189): Fitter placement preparation operations beginning
 Info (170190): Fitter placement preparation operations ending: elapsed time is 00:00:01
 Info (170191): Fitter placement operations beginning
 Info (170137): Fitter placement was successful
-Info (170192): Fitter placement operations ending: elapsed time is 00:00:01
+Info (170192): Fitter placement operations ending: elapsed time is 00:00:03
 Info (170193): Fitter routing operations beginning
 Info (170195): Router estimated average interconnect usage is 0% of the available device resources
     Info (170196): Router estimated peak interconnect usage is 17% of the available device resources in the region that extends from location X46_Y24 to location X57_Y36
-Info (170194): Fitter routing operations ending: elapsed time is 00:00:01
+Info (170194): Fitter routing operations ending: elapsed time is 00:00:02
 Info (170199): The Fitter performed an Auto Fit compilation.  Optimizations were skipped to reduce compilation time.
     Info (170201): Optimizations that may affect the design's routability were skipped
     Info (170200): Optimizations that may affect the design's timing were skipped
-Info (11888): Total time spent on timing analysis during the Fitter is 0.29 seconds.
+Info (11888): Total time spent on timing analysis during the Fitter is 0.40 seconds.
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
-Info (11218): Fitter post-fit operations ending: elapsed time is 00:00:02
+Info (11218): Fitter post-fit operations ending: elapsed time is 00:00:03
 Warning (171167): Found invalid Fitter assignments. See the Ignored Assignments panel in the Fitter Compilation Report for more information.
 Info (144001): Generated suppressed messages file /home/ecegrid/a/mg226/ECE437_Labs/processors/._register_file/register_file.fit.smsg
 Info: Quartus II 64-Bit Fitter was successful. 0 errors, 2027 warnings
-    Info: Peak virtual memory: 1284 megabytes
-    Info: Processing ended: Wed Aug 23 17:54:15 2017
-    Info: Elapsed time: 00:00:16
-    Info: Total CPU time (on all processors): 00:00:20
+    Info: Peak virtual memory: 1207 megabytes
+    Info: Processing ended: Sun Aug 27 19:42:27 2017
+    Info: Elapsed time: 00:00:23
+    Info: Total CPU time (on all processors): 00:00:31
 
 
 +----------------------------+
@@ -9926,7 +9926,7 @@ The suppressed messages can be found in /home/ecegrid/a/mg226/ECE437_Labs/proces
 
 
 Flow report for register_file
-Wed Aug 23 17:54:25 2017
+Sun Aug 27 19:42:39 2017
 Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
 
 
@@ -9967,7 +9967,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------------------------------+
 ; Flow Summary                                                                          ;
 +------------------------------------+--------------------------------------------------+
-; Flow Status                        ; Successful - Wed Aug 23 17:54:25 2017            ;
+; Flow Status                        ; Successful - Sun Aug 27 19:42:39 2017            ;
 ; Quartus II 64-Bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Full Version ;
 ; Revision Name                      ; register_file                                    ;
 ; Top-level Entity Name              ; register_file                                    ;
@@ -9991,7 +9991,7 @@ applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 08/23/2017 17:53:54 ;
+; Start date & time ; 08/27/2017 19:41:59 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; register_file       ;
 +-------------------+---------------------+
@@ -10002,7 +10002,7 @@ applicable agreement for further details.
 +-------------------------------------+--------------------------------------------------------------+---------------+-------------+----------------+
 ; Assignment Name                     ; Value                                                        ; Default Value ; Entity Name ; Section Id     ;
 +-------------------------------------+--------------------------------------------------------------+---------------+-------------+----------------+
-; COMPILER_SIGNATURE_ID               ; 268891671205424.150352523422850                              ; --            ; --          ; --             ;
+; COMPILER_SIGNATURE_ID               ; 53384727165543.150387731922597                               ; --            ; --          ; --             ;
 ; EDA_GENERATE_FUNCTIONAL_NETLIST     ; On                                                           ; --            ; --          ; eda_simulation ;
 ; EDA_MAINTAIN_DESIGN_HIERARCHY       ; On                                                           ; --            ; --          ; eda_simulation ;
 ; EDA_OUTPUT_DATA_FORMAT              ; Verilog                                                      ; --            ; --          ; eda_simulation ;
@@ -10029,26 +10029,26 @@ applicable agreement for further details.
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis      ; 00:00:03     ; 1.0                     ; 705 MB              ; 00:00:02                           ;
-; Fitter                    ; 00:00:15     ; 1.6                     ; 1284 MB             ; 00:00:19                           ;
-; Design Assistant          ; 00:00:01     ; 1.0                     ; 859 MB              ; 00:00:01                           ;
-; TimeQuest Timing Analyzer ; 00:00:04     ; 1.0                     ; 792 MB              ; 00:00:03                           ;
+; Analysis & Synthesis      ; 00:00:03     ; 1.0                     ; 709 MB              ; 00:00:03                           ;
+; Fitter                    ; 00:00:22     ; 1.7                     ; 1207 MB             ; 00:00:30                           ;
+; Design Assistant          ; 00:00:01     ; 1.0                     ; 858 MB              ; 00:00:01                           ;
+; TimeQuest Timing Analyzer ; 00:00:05     ; 1.0                     ; 786 MB              ; 00:00:05                           ;
 ; EDA Netlist Writer        ; 00:00:01     ; 1.0                     ; 926 MB              ; 00:00:01                           ;
-; Total                     ; 00:00:24     ; --                      ; --                  ; 00:00:26                           ;
+; Total                     ; 00:00:32     ; --                      ; --                  ; 00:00:40                           ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
-+---------------------------------------------------------------------------------------------+
-; Flow OS Summary                                                                             ;
-+---------------------------+-------------------------+---------+------------+----------------+
-; Module Name               ; Machine Hostname        ; OS Name ; OS Version ; Processor type ;
-+---------------------------+-------------------------+---------+------------+----------------+
-; Analysis & Synthesis      ; cparch16.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
-; Fitter                    ; cparch16.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
-; Design Assistant          ; cparch16.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
-; TimeQuest Timing Analyzer ; cparch16.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
-; EDA Netlist Writer        ; cparch16.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
-+---------------------------+-------------------------+---------+------------+----------------+
++--------------------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                                  ;
++---------------------------+------------------------------+---------+------------+----------------+
+; Module Name               ; Machine Hostname             ; OS Name ; OS Version ; Processor type ;
++---------------------------+------------------------------+---------+------------+----------------+
+; Analysis & Synthesis      ; ecegrid-thin7.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
+; Fitter                    ; ecegrid-thin7.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
+; Design Assistant          ; ecegrid-thin7.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
+; TimeQuest Timing Analyzer ; ecegrid-thin7.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
+; EDA Netlist Writer        ; ecegrid-thin7.ecn.purdue.edu ; Red Hat ; 6          ; x86_64         ;
++---------------------------+------------------------------+---------+------------+----------------+
 
 
 ------------
@@ -10063,7 +10063,7 @@ quartus_eda register_file -c register_file
 
 
 Analysis & Synthesis report for register_file
-Wed Aug 23 17:53:57 2017
+Sun Aug 27 19:42:03 2017
 Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
 
 
@@ -10107,7 +10107,7 @@ applicable agreement for further details.
 +---------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                          ;
 +------------------------------------+--------------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Wed Aug 23 17:53:57 2017            ;
+; Analysis & Synthesis Status        ; Successful - Sun Aug 27 19:42:03 2017            ;
 ; Quartus II 64-Bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Full Version ;
 ; Revision Name                      ; register_file                                    ;
 ; Top-level Entity Name              ; register_file                                    ;
@@ -10218,7 +10218,7 @@ applicable agreement for further details.
 +----------------------------+-------------+
 ; Processors                 ; Number      ;
 +----------------------------+-------------+
-; Number detected on machine ; 8           ;
+; Number detected on machine ; 40          ;
 ; Maximum allowed            ; 4           ;
 ;                            ;             ;
 ; Average used               ; 1.00        ;
@@ -10227,7 +10227,7 @@ applicable agreement for further details.
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
 ;     Processors 2-4         ; < 0.1%      ;
-;     Processors 5-8         ;   0.0%      ;
+;     Processors 5-40        ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -10376,7 +10376,7 @@ Info: Running Quartus II 64-Bit Analysis & Synthesis
     Info: programming logic devices manufactured by Altera and sold by 
     Info: Altera or its authorized distributors.  Please refer to the 
     Info: applicable agreement for further details.
-    Info: Processing started: Wed Aug 23 17:53:54 2017
+    Info: Processing started: Sun Aug 27 19:41:59 2017
 Info: Command: quartus_map register_file -c register_file
 Info (20032): Parallel compilation is enabled and will use up to 4 processors
 Info (12021): Found 3 design units, including 2 entities, in source file /home/ecegrid/a/mg226/ECE437_Labs/processors/source/register_file.sv
@@ -10392,14 +10392,14 @@ Info (21057): Implemented 2489 device resources after synthesis - the final reso
     Info (21059): Implemented 64 output pins
     Info (21061): Implemented 2375 logic cells
 Info: Quartus II 64-Bit Analysis & Synthesis was successful. 0 errors, 0 warnings
-    Info: Peak virtual memory: 746 megabytes
-    Info: Processing ended: Wed Aug 23 17:53:57 2017
-    Info: Elapsed time: 00:00:03
-    Info: Total CPU time (on all processors): 00:00:03
+    Info: Peak virtual memory: 734 megabytes
+    Info: Processing ended: Sun Aug 27 19:42:03 2017
+    Info: Elapsed time: 00:00:04
+    Info: Total CPU time (on all processors): 00:00:04
 
 
 TimeQuest Timing Analyzer report for register_file
-Wed Aug 23 17:54:23 2017
+Sun Aug 27 19:42:36 2017
 Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
 
 
@@ -10510,7 +10510,7 @@ applicable agreement for further details.
 +----------------------------+-------------+
 ; Processors                 ; Number      ;
 +----------------------------+-------------+
-; Number detected on machine ; 8           ;
+; Number detected on machine ; 40          ;
 ; Maximum allowed            ; 4           ;
 ;                            ;             ;
 ; Average used               ; 1.00        ;
@@ -10519,7 +10519,7 @@ applicable agreement for further details.
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
 ;     Processors 2-4         ; < 0.1%      ;
-;     Processors 5-8         ;   0.0%      ;
+;     Processors 5-40        ;   0.0%      ;
 +----------------------------+-------------+
 
 
@@ -10528,7 +10528,7 @@ applicable agreement for further details.
 +-------------------+--------+--------------------------+
 ; SDC File Path     ; Status ; Read at                  ;
 +-------------------+--------+--------------------------+
-; register_file.sdc ; OK     ; Wed Aug 23 17:54:20 2017 ;
+; register_file.sdc ; OK     ; Sun Aug 27 19:42:33 2017 ;
 +-------------------+--------+--------------------------+
 
 
@@ -15016,7 +15016,7 @@ Info: Running Quartus II 64-Bit TimeQuest Timing Analyzer
     Info: programming logic devices manufactured by Altera and sold by 
     Info: Altera or its authorized distributors.  Please refer to the 
     Info: applicable agreement for further details.
-    Info: Processing started: Wed Aug 23 17:54:18 2017
+    Info: Processing started: Sun Aug 27 19:42:31 2017
 Info: Command: quartus_sta register_file -c register_file
 Info: qsta_default_script.tcl version: #1
 Info (20032): Parallel compilation is enabled and will use up to 4 processors
@@ -15127,9 +15127,9 @@ Info (332113): Path #1: slack is -3.000 (VIOLATED)
 Info (332102): Design is not fully constrained for setup requirements
 Info (332102): Design is not fully constrained for hold requirements
 Info: Quartus II 64-Bit TimeQuest Timing Analyzer was successful. 0 errors, 13 warnings
-    Info: Peak virtual memory: 792 megabytes
-    Info: Processing ended: Wed Aug 23 17:54:23 2017
+    Info: Peak virtual memory: 786 megabytes
+    Info: Processing ended: Sun Aug 27 19:42:36 2017
     Info: Elapsed time: 00:00:05
-    Info: Total CPU time (on all processors): 00:00:03
+    Info: Total CPU time (on all processors): 00:00:05
 
 
