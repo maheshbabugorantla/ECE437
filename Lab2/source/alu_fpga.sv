@@ -8,7 +8,6 @@
 
 // interface
 `include "alu_if.vh"
-`include "cpu_types_pkg.vh"
 
 module alu_fpga (
 
@@ -46,6 +45,10 @@ module alu_fpga (
 				aluif.portB[31:16] <= 16'h0000;
 			end
 		end
+		// else
+		// begin
+
+		// end
 		if(SW[16] == 1'b1)
 		begin
 			aluif.portA[15:0] <= SW[15:0];
@@ -212,10 +215,9 @@ module alu_fpga (
 	      'he: HEX7 = 7'b0000110;
 	      'hf: HEX7 = 7'b0001110;
 	endcase
-end
 
 	// Because KEY are the Push Buttons and a press is read as a 0 
 	// which needs to be negated to be read as 1
-	assign aluif.aluOp = aluop_t'(~KEY[3:0]);
+	assign aluif.aluOp = ~ KEY[3:0];
 
 endmodule
