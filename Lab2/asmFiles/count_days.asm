@@ -9,7 +9,7 @@ ori $sp, $0, 0xFFFC
 
 # Intermediate Registers
 ori $2, $0, 0x0000
-ori $2, $0, 0x0000
+ori $3, $0, 0x0000
 
 # Registers to store the constants 2000, 365, 30
 ori $10, $0, 0x07D0 # Year 2000
