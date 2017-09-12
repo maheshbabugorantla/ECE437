@@ -34,7 +34,7 @@ interface cpu_ram_if;
   // ram ports
   modport ram (
     input   ramaddr, ramstore, ramREN, ramWEN,
-    output  ramstate, ramload
+    output  ramstate, ramload // ramload is data in the Lab Picture to the Memory Controller
   );
 
   // unused and may change
