@@ -7,10 +7,10 @@
 */
 
 // interface include
-`include "./include/cache_control_if.vh"
+`include "cache_control_if.vh"
 
 // memory types
-`include "./include/cpu_types_pkg.vh"
+`include "cpu_types_pkg.vh"
 
 module memory_control (
   input CLK, nRST,

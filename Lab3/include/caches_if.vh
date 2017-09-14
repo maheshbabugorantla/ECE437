@@ -13,7 +13,7 @@
 `define CACHES_IF_VH
 
 // ram memory types
-`include "./include/cpu_types_pkg.vh"
+`include "cpu_types_pkg.vh"
 
 interface caches_if;
 

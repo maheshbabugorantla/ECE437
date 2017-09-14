@@ -5,8 +5,8 @@
 	Description: This source code is used to design the alu for Lab-1 => This is a purely Combinational Block
 */
 
-`include "../include/cpu_types_pkg.vh"
-`include "../include/alu_if.vh"
+`include "cpu_types_pkg.vh"
+`include "alu_if.vh"
 
 import cpu_types_pkg::*;
 

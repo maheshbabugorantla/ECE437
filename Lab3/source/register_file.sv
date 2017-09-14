@@ -5,8 +5,8 @@
 	Description: This is used to define the register file for the Lab-1
 */
 
-`include "cpu_types_pkg.vh"
 `include "register_file_if.vh"
+`include "cpu_types_pkg.vh"
 
 import cpu_types_pkg::*;
 
