@@ -17,14 +17,14 @@ ori $3, $0, 0x0002 # Storing 10
 ori $4, $0, 0x0000 # Register to store the Result 
 
 # Pushing the two operands onto the stack, here I am pushing the $3 twice onto the stack is because I can restore the value $3 back
-# push $3
-# push $2
-# push $3
+push $3
+push $2
+push $3
 
 multiplication:
 		# Get the registers that contain the operands
-		# pop $3
-		# pop $2
+		pop $3
+		pop $2
 
 iterate:
 		beq $3, $0, done # Jump to label 'done' once $2 (counter) is zero
@@ -32,6 +32,6 @@ iterate:
 		addiu $3, $3, -1 # Subtract one from the Counter
 		j iterate # Jump to the label iterate
 done:
-		# pop $3 # Restoring the Value of $3 back
-		sw $4, 80($8) # Result should be 80 * 2 = 160 (A0 in $4)
+		pop $3 # Restoring the Value of $3 back
+		push $4 # Result should be 80 * 2 = 160 (A0 in $4)
 		halt

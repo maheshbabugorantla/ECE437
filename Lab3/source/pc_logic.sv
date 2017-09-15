@@ -26,7 +26,7 @@ module pc_logic (
 		begin
 			pcif.imemaddr <= word_t'(32'h00000000);
 		end
-		else if(pcif.ihit == 1'b1)
+		else if(pcif.ihit == 1'b1 && pcif.dhit == 1'b0)
 		begin
 			pcif.imemaddr <= word_t'(pcNext);
 		end
@@ -38,14 +38,37 @@ module pc_logic (
 		tempReg = pcif.imemaddr + 32'h00000004;
 
 		// jmpReg condition
-		if(pcif.Branch == 1'b0) // Any Other Instruction
+		if(pcif.Branch == 1'b0 && pcif.zero == 1'b1) // Any Other Instruction
 		begin
 			jmpReg = tempReg; // PC + 4
 		end
-		else // BEQ or BNE
+		else if(pcif.Branch == 1'b1 && pcif.zero == 1'b1)
 		begin
-			jmpReg = tempReg + {{14{pcif.imemLoad[15]}}, pcif.imemLoad[15:0], 2'b00}; // SignExt(PC + 4) << 2
+			if(opcode_t'(pcif.imemLoad[31:26]) == BEQ)
+			begin
+				jmpReg = tempReg + {{14{pcif.imemLoad[15]}}, pcif.imemLoad[15:0], 2'b00}; // SignExt(PC + 4) << 2
+			end
+			else
+			begin // BNE
+				jmpReg = tempReg; // PC + 4
+			end
 		end
+		else if(pcif.Branch == 1'b1 && pcif.zero == 1'b0)
+		begin
+			if(opcode_t'(pcif.imemLoad[31:26]) == BNE)
+			begin
+				jmpReg = tempReg + {{14{pcif.imemLoad[15]}}, pcif.imemLoad[15:0], 2'b00}; // SignExt(PC + 4) << 2
+			end
+			else
+			begin // BEQ
+				jmpReg = tempReg; // PC + 4
+			end
+		end
+		else
+		begin
+			jmpReg = tempReg; // + {{14{pcif.imemLoad[15]}}, pcif.imemLoad[15:0], 2'b00}; // SignExt(PC + 4) << 2
+		end
+
 
 		// haltReg condition
 		if(pcif.JmpSel == 2'b00)

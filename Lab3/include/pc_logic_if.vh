@@ -17,7 +17,7 @@ interface pc_logic_if;
 	import cpu_types_pkg::*;
 
 	// Input
-	logic ihit, zero, Branch, halt;
+	logic ihit, zero, Branch, halt, dhit;
 	logic [1:0] JmpSel;
 	word_t imemLoad;
 	word_t rdat1; // When JmpSel == 2'b10 for JR Instruction
@@ -27,7 +27,7 @@ interface pc_logic_if;
 	logic [31:0] nextPC; // Doubtful
 
 	modport pc_logic(
-			input ihit, zero, halt, Branch, JmpSel, imemLoad, rdat1,
+			input ihit, dhit, zero, halt, Branch, JmpSel, imemLoad, rdat1,
 			output imemaddr, nextPC
 		);
 	

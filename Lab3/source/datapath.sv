@@ -238,9 +238,9 @@ module datapath (
   // Register File Inputs
   assign rf_if.rsel1 = regbits_t'(cu_if.regS);
   assign rf_if.rsel2 = regbits_t'(cu_if.regT);
-  assign rf_if.WEN = (ru_if.ihit || ru_if.dhit) && cu_if.RegWrite;
-  assign rf_if.wsel = tempWSel;
-  assign rf_if.wdat = tempWdat;
+  assign rf_if.WEN   = cu_if.RegWrite; // (ru_if.ihit || ru_if.dhit) && cu_if.RegWrite;
+  assign rf_if.wsel  = tempWSel;
+  assign rf_if.wdat  = tempWdat;
 
   // Register File Outputs
   assign pc_if.rdat1 = rf_if.rdat1;
@@ -261,8 +261,9 @@ module datapath (
   assign ru_if.dREN = cu_if.dREN;
   assign ru_if.dWEN = cu_if.dWEN;
   assign cu_if.imemLoad = dpif.imemload;
-  assign cu_if.dhit = ru_if.dhit;
-  assign pc_if.ihit = ru_if.ihit;
+  assign cu_if.dhit = dpif.dhit;
+  assign pc_if.ihit = dpif.ihit;
+  assign pc_if.dhit = dpif.dhit;
 
   // PC Logic
   assign pc_if.Branch = cu_if.Branch;
