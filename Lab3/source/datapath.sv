@@ -238,7 +238,7 @@ module datapath (
   // Register File Inputs
   assign rf_if.rsel1 = regbits_t'(cu_if.regS);
   assign rf_if.rsel2 = regbits_t'(cu_if.regT);
-  assign rf_if.WEN   = cu_if.RegWrite; // (ru_if.ihit || ru_if.dhit) && cu_if.RegWrite;
+  assign rf_if.WEN   = (dpif.ihit || dpif.dhit) && cu_if.RegWrite; // (ru_if.ihit || ru_if.dhit) && cu_if.RegWrite;
   assign rf_if.wsel  = tempWSel;
   assign rf_if.wdat  = tempWdat;
 
