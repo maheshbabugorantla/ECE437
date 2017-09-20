@@ -20,65 +20,54 @@ module memory_control (
   import cpu_types_pkg::*;
 
   // number of cpus for cc
-  parameter CPUS = 2;
+  parameter CPUS = 1;
 
-/*
-  // Optimize the Logic into the Compound Statement
-  always_comb
-  begin
-    casez(ccif.ramstate)
-      FREE:
-      begin
-          ccif.iwait = 1'b1;
-          ccif.dwait = 1'b1;
-      end
+  //ram
+  always_comb begin
 
-      BUSY:
-      begin
-          ccif.iwait = 1'b1;
-          ccif.dwait = 1'b1;
-      end
-
-      ACCESS: // Need to Change this
-      begin
-          // iwait should be pulled low only when there are no attempts read or write the data but read an instruction
-          ccif.iwait = (ccif.dREN == 1'b0 && ccif.dWEN == 1'b0 && ccif.iREN == 1'b1) ? 1'b0 : 1'b1;
-          // If Data needs to read / written to a memory location then the dwait should be de-asserted
-          ccif.dwait = (ccif.dREN == 1'b1 || ccif.dWEN == 1'b1) ? 1'b0 : 1'b1;
-      end
-
-      ERROR:
-      begin
-          ccif.iwait = 1'b1;
-          ccif.dwait = 1'b1;
-      end
-
-      default:
-      begin
-          ccif.iwait = 1'b1;
-          ccif.dwait = 1'b1;
-      end
-
-    endcase
+	ccif.ramstore = ccif.dstore;
+	ccif.ramWEN = ccif.dWEN;
+	if (ccif.dWEN == 1'b1 || ccif.dREN == 1'b1) begin
+		ccif.ramaddr = ccif.daddr;
+	end
+	else begin
+		ccif.ramaddr = ccif.iaddr;
+	end
+	
+	if ((ccif.iREN == 1'b1 || ccif.dREN == 1'b1) && ccif.dWEN == 1'b0) begin
+		ccif.ramREN = 1'b1;
+	end
+	else begin
+		ccif.ramREN = 1'b0;	
+	end		
+	
   end
-*/
 
-  // iwait should be pulled low only when there are no attempts read or write the data but read an instruction
-  assign ccif.iwait = (ccif.ramstate == ACCESS) ? ((ccif.dREN == 1'b0 && ccif.dWEN == 1'b0 && ccif.iREN == 1'b1) ? 1'b0 : 1'b1) : 1'b1;
 
-  // If Data needs to read / written to a memory location then the dwait should be de-asserted
-  assign ccif.dwait = (ccif.ramstate == ACCESS) ? ((ccif.dREN == 1'b1 || ccif.dWEN == 1'b1) ? 1'b0 : 1'b1) : 1'b1;
+  //i-d
+  always_comb begin
 
-  // Outputs to Cache Block
-  assign ccif.iload = (ccif.iREN == 1'b1 && ccif.dREN == 1'b0 && ccif.dWEN == 1'b0) ? ccif.ramload : '0; // Check this for correction
-  assign ccif.dload = ccif.ramload;
+	ccif.dload = ccif.ramload;
+	if (ccif.iREN == 1'b1) begin
+		ccif.iload = ccif.ramload;
+	end
+	else begin
+		ccif.iload = 0;
+	end
 
-  // Outputs To Variable Latency RAM
-  assign ccif.ramstore = ccif.dstore;
-  assign ccif.ramaddr = (ccif.dWEN == 1'b1 || ccif.dREN == 1'b1) ? ccif.daddr : ccif.iaddr; // If the Data is Requested to be read or written then the 'daddr' is given. Else 'iaddr' is assigned
-
-  // The below two instructions should be inverse of each other (Check with Test Bench if the conditions are met properly and also Check with TA)
-  assign ccif.ramWEN = ccif.dWEN;
-  assign ccif.ramREN = ((ccif.iREN == 1'b1 || ccif.dREN == 1'b1) && ccif.dWEN == 1'b0) ? 1 : 0;
+	if (ccif.dWEN == 1'b0 && ccif.iREN == 1'b1 && ccif.dREN == 1'b0 && ccif.ramstate == ACCESS) begin
+		ccif.iwait = 0;
+	end
+	else begin
+		ccif.iwait = 1;
+	end
+		
+	if ((ccif.dREN == 1'b1 || ccif.dWEN == 1'b1) && ccif.ramstate == ACCESS) begin
+		ccif.dwait = 0;
+	end
+	else begin
+		ccif.dwait = 0;
+	end
+  end
 
 endmodule

@@ -1,71 +1,55 @@
+	ORG 0x0000
+	ORI $29, $0, 0xFFFC
+	ORI $28, $0, 0xFFF8
+	#Operands
+	ORI $2, $0, 8 #current month
+	ORI $1, $0, 1
+	SUB $2, $2, $1
+	PUSH $2
+	ORI $3, $0, 30
+	PUSH $3
 
-# Calculate Days
+	JAL l_begin
 
-# Setting the base address for the program
-org 0x0000
+	POP $20 #Middle Term
 
-# Initializing the Stack Address to point to 0xFFFC
-ori $sp, $0, 0xFFFC
+	ORI $2, $0, 2017 #current year
+	ORI $1, $0, 2000
+	SUB $2, $2, $1
+	PUSH $2
+	ORI $3, $0, 365
+	PUSH $3	
 
-# Intermediate Registers
-ori $2, $0, 0x0000
-ori $3, $0, 0x0000
+	JAL l_begin
 
-# Registers to store the constants 2000, 365, 30
-ori $10, $0, 0x07D0 # Year 2000
-ori $11, $0, 0x016D # 365 Days in an year
-ori $12, $0, 0x001E # 30 Days in a month
-ori $13, $0, 0x0001 # January
+	POP $21 #Last Term
 
-# Register that stores the current Day
-ori $14, $0, 0x001D # 29th day of the month
+	ADD $22, $20, $21 #Middle + Last
+	
+	ADDI $23, $22, 20 #current day
 
-# Current Year
-ori $15, $0, 0x07E1 # 2017
+	#final amount of days stored in Reg23
+	
+	HALT
 
-# Current Month
-ori $16, $0, 0x0008 # August
+l_begin:
+	BEQ $28, $29, l_exit
+	ORI $10, $0, 0 #Result
+	ORI $7, $0, 0 #Increment counter
+	POP $9
+	POP $8
+	
+l_multiply:
+	BNE $8, $7, l_add
+	j l_return
 
-# (Current Month - 1)
-subu $16, $16, $13
-
-push $16
-push $12
-
-# (Current Year - 2000)
-subu $15, $15, $10
-
-push $15
-push $11
-
-# Result registers
-ori $4, $0, 0x0000 # Initializing the intermediate result register
-ori $5, $0, 0x0000 # Initializing the Final result register
-ori $20, $0, 0x0001 # Initializing the register to 1
-
-# Counter to count the no.of operands
-ori $10, $0, 0x0005 # Storing 5
-
-main:
-	addu $5, $5, $4
-	beq $10, $20, exit
-	addiu $10, $10, -2
-
-multiply_procedure:
-	pop $2
-	pop $3
-	ori $4, $0, 0x0000 # Resetting the Counter
-
-iterate:
-		beq $3, $0, done # Jump to label 'done' once $2 (counter) is zero
-		addu $4, $4, $2 # Add Unsigned word in $1 to $4 and store the result in $4
-		addiu $3, $3, -1 # Subtract one from the Counter
-		jal iterate # Jump to the label iterate
-
-done:
-		jal main
-
-exit:
-	addu $5, $5, $14
-	push $5
-	halt
+l_add:
+	ADDI $7, $7, 1
+	ADD $10, $10, $9
+	j l_multiply
+	
+l_return:
+	PUSH $10
+	J l_begin
+l_exit:
+	JR $31

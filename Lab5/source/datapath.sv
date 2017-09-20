@@ -8,278 +8,257 @@
 
 // data path interface
 `include "datapath_cache_if.vh"
-`include "request_unit_if.vh"
-`include "control_unit_if.vh"
-`include "pc_logic_if.vh"
-`include "reg_alu_top_level_if.vh"
-`include "alu_if.vh"
-`include "register_file_if.vh"
 
-// alu op, mips op, and instruction type
+//other interfaces
+`include "alu_file_if.vh"
+`include "control_unit_if.vh"
+`include "register_file_if.vh"
+`include "program_counter_if.vh"
+`include "if_id_if.vh"
+`include "id_ex_if.vh"
+`include "ex_mem_if.vh"
+`include "mem_wb_if.vh"
+
+// alu_file op, mips op, and instr type
 `include "cpu_types_pkg.vh"
 
 module datapath (
-  input logic CLK, nRST,
+  input logic CLK, 
+  input logic nRST,
   datapath_cache_if.dp dpif
 );
   // import types
   import cpu_types_pkg::*;
 
+  word_t jumpAddr;
+  word_t branchAddr;
+  word_t pc, new_pc, nextpc;
+  logic [13:0] signExt;
+  word_t rdat1, rdat2;
+
+  alu_file_if aluif();
+  register_file_if rfif();
+  control_unit_if cuif();
+  if_id_if ifid_if();
+  id_ex_if idex_if();
+  ex_mem_if exmem_if();
+  mem_wb_if memwb_if();
+
   // pc init
   parameter PC_INIT = 0;
 
-  // Interfaces for Request Unit, Control Unit, PC Logic & (ALU_Register_File Top-Level)
-  request_unit_if ru_if();
-  control_unit_if cu_if();
-  pc_logic_if pc_if();
-  // reg_alu_top_level_if ra_if();
-  alu_if alu_if();
-  register_file_if rf_if();
+  alu_file ALU (aluif);
+  register_file RF (CLK, nRST, rfif);
+  control_unit CU (cuif);
+  if_id IFID (CLK, nRST, ifid_if);
+  id_ex IDEX (CLK, nRST, idex_if);
+  ex_mem EXMEM (CLK, nRST, exmem_if);
+  mem_wb MEMWB (CLK, nRST, memwb_if);
 
-  // DUTs
-  request_unit ru_dut(CLK, nRST, ru_if);
-  control_unit cu_dut(cu_if);
-  pc_logic pc_dut(CLK, nRST, pc_if);
-  // reg_alu_top_level ra_dut(CLK, nRST, ra_if);
-  alu alu_dut(alu_if);
-  register_file rf_dut(CLK, nRST, rf_if);
+  //data path
+  assign dpif.dmemstore = exmem_if.rdat2_o;
+  assign dpif.dmemaddr = exmem_if.out_o;
+  assign dpif.imemREN = 1;
+  assign dpif.imemaddr = pc;
+  assign dpif.dmemREN = exmem_if.dREN_o;
+  assign dpif.dmemWEN = exmem_if.dWEN_o;
 
-  // Temporary Registers
-  regbits_t tempWSel;
-  word_t tempWdat, tempPortB;
-  logic  extOp;
+  //instr set
+  assign cuif.instr = ifid_if.instr_o;
+  assign rdat1 = idex_if.rdat1_o;
+  assign rdat2 = idex_if.rdat2_o;
 
-  logic nextHalt;
-
-  always_ff@(posedge CLK, negedge nRST)
-  begin
-      if(nRST == 1'b0)
-      begin
-          dpif.halt <= 1'b0;
-      end
-      else
-      begin
-          dpif.halt <= nextHalt;
-      end
-  end
-
-  // Check for the change in halt signal status
-  always_comb
-  begin
-      if(cu_if.halt == 1'b1)
-      begin
-          nextHalt = 1'b1;
-      end
-      else
-      begin
-          nextHalt = dpif.halt;
-      end
-  end  
-
-  /* Determine the extOp value to perform sign or zero extend of imm code */
-  always_comb
-  begin: EXT_OP
-
-    extOp = 1'b0;
-
-    case (opcode_t'(dpif.imemload[31:26]))
-      
-      ADDI:
-      begin
-        extOp = 1'b1; // SignExtImm
-      end
-
-      ADDIU:
-      begin
-        extOp = 1'b1; // SignExtImm
-      end
-
-      SLTI:
-      begin
-        extOp = 1'b1; // SignExtImm
-      end
-
-      SLTIU:
-      begin
-        extOp = 1'b1; // SignExtImm
-      end
-
-      ANDI:
-      begin
-        extOp = 1'b0; // ZeroExtImm
-      end
-
-      ORI:
-      begin
-        extOp = 1'b0; // ZeroExtImm
-      end
-
-      XORI:
-      begin
-        extOp = 1'b0; // ZeroExtImm
-      end
-
-      SW:
-      begin
-        extOp = 1'b1; // SignExtImm
-      end
-
-      LW:
-      begin
-        extOp = 1'b1; // SignExtImm
-      end
-
-      default:
-      begin     
-        extOp = 1'b0;
-      end
-    endcase
+  //halt and pc flip flop
+  always_ff @(posedge CLK, negedge nRST) begin
+	if (nRST == 1'b0) begin
+		dpif.halt <= 0;
+		pc <= '0;
+	end
+	else begin
+		dpif.halt <= memwb_if.halt_i;
+		if (dpif.ihit == 1'b1) begin
+			pc <= new_pc;
+		end
+ 	end
   end
 
 
-  always_comb
-  begin //: wsel_mux
-
-    tempWSel = regbits_t'(5'b00000); // Because Write Operations to 00000 location is avoided
-
-    case(cu_if.RegDst) // wsel mux
-
-      2'b00:
-      begin
-        tempWSel = regbits_t'(cu_if.regT);
-      end
-
-      2'b01:
-      begin
-        tempWSel = regbits_t'(cu_if.regD);
-      end
-
-      2'b10:
-      begin
-        tempWSel = regbits_t'(5'b11111); // for JAL
-      end
-
-      default:
-      begin
-        tempWSel = regbits_t'(5'b00000); // Because Write Operations to 00000 location is avoided
-      end
-    endcase
+  //if_id
+  always_comb begin
+	ifid_if.instr_i = dpif.imemload;
+	ifid_if.next_pc_i = nextpc;
+	ifid_if.ihit = dpif.ihit;
+	ifid_if.flush = 0;
+	ifid_if.freeze = 0;
+  end
+  //id_ex
+  always_comb begin
+	idex_if.rdat1_i = rfif.rdat1;
+	idex_if.rdat2_i = rfif.rdat2;
+	idex_if.next_pc_i = ifid_if.next_pc_o;
+	idex_if.aluop_i = cuif.aluop;
+	idex_if.shamt_i = cuif.shamt;
+	idex_if.ihit = dpif.ihit;
+	idex_if.flush = 0;
+	idex_if.freeze = 0;
+	idex_if.ALUSel_i = cuif.ALUSel;
+	idex_if.RegDest_i = cuif.RegDest;
+	idex_if.jumpSel_i = cuif.JumpSel;
+	idex_if.PCSel_i = cuif.PCSel;
+	idex_if.memToReg_i = cuif.memtoReg;
+	idex_if.lui_i = cuif.lui;
+	idex_if.bne_i = cuif.bne;
+	idex_if.halt_i = cuif.halt;
+	idex_if.rd_i = cuif.rd;
+	idex_if.rt_i = cuif.rt;
+	idex_if.rs_i = cuif.rs;
+	idex_if.imm_i = cuif.imm;
+	idex_if.imm_26_i = cuif.imm_26;
+	idex_if.regWEN_i = cuif.regWEN;
+	idex_if.jal_i = cuif.jal;
+	idex_if.dREN_i = cuif.dREN;
+	idex_if.dWEN_i = cuif.dWEN;
+	idex_if.imemREN_i = cuif.imemREN;
+	idex_if.instr_i = ifid_if.instr_o;
   end
 
-  always_comb
-  begin //: portB_mux
-
-    tempPortB = word_t'(32'h00000000); // Because Write Operations to 00000 location is avoided
-
-    case(cu_if.aluSrc) // aluSrc mux
-
-      2'b00:
-      begin
-        tempPortB = rf_if.rdat2;
-      end
-
-      2'b01: // ExtOp (0 - ZeroExt, 1 - SignExt)
-      begin
-        if(extOp == 1'b1)
-        begin
-          tempPortB = {{16{dpif.imemload[15]}}, dpif.imemload[15:0]}; // Sign Extend
-        end
-        else if(extOp == 1'b0)
-        begin
-          tempPortB = {{16{1'b0}}, dpif.imemload[15:0]}; // Zero Extend
-        end
-      end
-
-      2'b10: // shamt
-      begin
-        tempPortB = word_t'({{27{1'b0}}, cu_if.shamt}); // Zero Extending the shamt(5bits size) to 32 bits
-      end
-
-      default:
-      begin
-        tempPortB = word_t'(32'h00000000); // Because Write Operations to 00000 location is avoided
-      end
-    endcase
+  //ex_mem
+  always_comb begin
+	exmem_if.ihit = dpif.ihit;
+	exmem_if.dhit = dpif.dhit;
+	exmem_if.rdat2_i = rdat2;	
+	exmem_if.lui_i = idex_if.lui_o;
+	exmem_if.rd_i = idex_if.rd_o;
+	exmem_if.rt_i = idex_if.rt_o;
+	exmem_if.imm_i = idex_if.imm_o;
+	exmem_if.halt_i = idex_if.halt_o;
+	exmem_if.out_i = aluif.out;
+	exmem_if.next_pc_i = idex_if.next_pc_o;
+	exmem_if.memToReg_i = idex_if.memToReg_o;
+	exmem_if.regWEN_i = idex_if.regWEN_o;
+	exmem_if.RegDest_i = idex_if.RegDest_o;
+	exmem_if.jal_i = idex_if.jal_o;
+	exmem_if.dREN_i = idex_if.dREN_o;
+	exmem_if.dWEN_i = idex_if.dWEN_o;
+	exmem_if.imemREN_i = idex_if.imemREN_o;
+	exmem_if.instr_i = idex_if.instr_o;
   end
 
-  // Mux for wdat
-  always_comb
-  begin//: wdat_mux
+  //mem_wb
+  always_comb begin
+	memwb_if.ihit = dpif.ihit;
+	memwb_if.dhit = dpif.dhit;
+	memwb_if.next_pc_i = exmem_if.next_pc_o;
+	memwb_if.memToReg_i = exmem_if.memToReg_o;
+	memwb_if.regWEN_i = exmem_if.regWEN_o;
+	memwb_if.RegDest_i = exmem_if.RegDest_o;
+	memwb_if.jal_i = exmem_if.jal_o;
+	memwb_if.imemREN_i = exmem_if.imemREN_o;
+	memwb_if.lui_i = exmem_if.lui_o;
+	memwb_if.rd_i = exmem_if.rd_o;
+	memwb_if.rt_i = exmem_if.rt_o;
+	memwb_if.imm_i = exmem_if.imm_o;
+	memwb_if.halt_i = exmem_if.halt_o;
+	memwb_if.out_i = exmem_if.out_o;
+	memwb_if.dmemload_i = dpif.dmemload;
+	memwb_if.instr_i = exmem_if.instr_o;
 
-    case(cu_if.MemtoReg) // wdat mux
+  end
+	
+  //pc
+  always_comb begin
 
-      2'b00:
-      begin
-        tempWdat = alu_if.outputPort;
-      end
+       	nextpc = pc + 4; 
+   
+	if (idex_if.jumpSel_o == 2'b00) begin
+		new_pc = nextpc;
+	end
+	else if (idex_if.jumpSel_o == 2'b01) begin
+		new_pc = jumpAddr;
+	end
+	else if (idex_if.jumpSel_o == 2'b10) begin
+		new_pc = idex_if.rdat1_o;
+	end
+	else begin
+		new_pc = branchAddr;
+	end
+  end
+  
+  //alu_file
+  always_comb begin
 
-      2'b01:
-      begin
-        tempWdat = dpif.dmemload;
-      end
+	aluif.port_a = rdat1;
+	aluif.aluop = idex_if.aluop_o;
 
-      2'b10: // LUI
-      begin
-        tempWdat = word_t'({dpif.imemload[15:0], 16'h0000});
-      end
-
-      2'b11: // JAL
-      begin
-        tempWdat = pc_if.imemaddr + 32'h00000004;
-      end
-
-      default:
-      begin
-        tempWdat = word_t'(32'h00000000); // Because Write Operations to 00000 location is avoided
-      end
-    endcase
+	if (idex_if.ALUSel_o == 2'b00) begin
+		aluif.port_b = rdat2;
+	end
+	else if (idex_if.ALUSel_o == 2'b01) begin
+		aluif.port_b = idex_if.shamt_o;
+	end
+	else if (idex_if.ALUSel_o == 2'b10 && idex_if.imm_o[15] == 1'b1) begin
+		aluif.port_b = {16'hffff, idex_if.imm_o};
+	end
+	else begin
+		aluif.port_b = {16'h0000, idex_if.imm_o};
+	end
   end
 
-  // Register File Inputs
-  assign rf_if.rsel1 = regbits_t'(cu_if.regS);
-  assign rf_if.rsel2 = regbits_t'(cu_if.regT);
-  assign rf_if.WEN   = cu_if.RegWrite; // (ru_if.ihit || ru_if.dhit) && cu_if.RegWrite;
-  assign rf_if.wsel  = tempWSel;
-  assign rf_if.wdat  = tempWdat;
+  //register file
 
-  // Register File Outputs
-  assign pc_if.rdat1 = rf_if.rdat1;
-  assign dpif.dmemstore = rf_if.rdat2; // Output
+  always_comb begin
 
-  // ALU Inputs
-  assign alu_if.portB = tempPortB;
-  assign alu_if.portA = rf_if.rdat1;
-  assign alu_if.aluOp = cu_if.aluOp;
+	rfif.rsel1 = cuif.rs;
+	rfif.rsel2 = cuif.rt;
+	rfif.WEN = memwb_if.regWEN_o;
 
-  // ALU Outputs
-  assign pc_if.zero = alu_if.zero;
-  //assign ra_if.negative = alu_if.negative;
-  //assign ra_if.overflow = alu_if.overflow;
-  // assign dpif.dmemaddr = alu_if.outputPort;
+	if (memwb_if.lui_o == 1'b1) begin
+		rfif.wdat = {memwb_if.imm_o, 16'b0};
+	end
+	else if (memwb_if.jal_o == 1'b1) begin
+		rfif.wdat = memwb_if.next_pc_o;
+	end
+	else if (memwb_if.memToReg_o == 1'b1) begin
+		rfif.wdat = memwb_if.dmemload_o;
+	end
+	else begin
+		rfif.wdat = memwb_if.out_o;
+	end
 
-  // Signals b/w Request Unit from Control Unit
-  assign ru_if.dREN = cu_if.dREN;
-  assign ru_if.dWEN = cu_if.dWEN;
-  assign cu_if.imemLoad = dpif.imemload;
-  assign cu_if.dhit = dpif.dhit;
-  assign pc_if.ihit = dpif.ihit;
-  assign pc_if.dhit = dpif.dhit;
+	if (memwb_if.RegDest_o == 2'b00) begin
+		rfif.wsel = memwb_if.rd_o;
+	end
+	else if (memwb_if.RegDest_o == 2'b01) begin
+		rfif.wsel = memwb_if.rt_o;
+	end
+	else begin
+		rfif.wsel = 5'b11111;
+	end
 
-  // PC Logic
-  assign pc_if.Branch = cu_if.Branch;
-  assign pc_if.JmpSel = cu_if.JmpSel;
-  assign pc_if.imemLoad = dpif.imemload;
+  end
 
-  /*ihitIn and dhitIn of REQUEST UNIT will receive the signal from cache*/
-  assign ru_if.ihitIn = dpif.ihit;
-  assign ru_if.dhitIn = dpif.dhit;
+  //jumpAddr and zeroExt
+  //signExt and branchAddr
+  always_comb begin
 
-  // Inputs to Control Unit
-  assign pc_if.halt = dpif.halt;
-  assign dpif.imemREN = 1'b1; // Doubtful
-  assign dpif.imemaddr = pc_if.imemaddr;
-  assign dpif.dmemREN = ru_if.dmemREN; // Comes from the Request Unit
-  assign dpif.dmemWEN = ru_if.dmemWEN; // Comes from the Request Unit
-  // assign dpif.dmemstore = rf_if.rdat2; // Comes from the ALU Register Top-Level Module
-  assign dpif.dmemaddr = alu_if.outputPort; // Comes from the ALU Register Top-Level Module
+	jumpAddr = {idex_if.next_pc_o[31:28], idex_if.imm_26_o, 2'b00};
+	
+	if (idex_if.imm_o[15] == 1) begin
+		signExt = 14'b11111111111111;
+	end 
+	else begin
+		signExt = 14'b00000000000000;
+	end
+	branchAddr = nextpc;
+  end
+
+
 endmodule
+
+
+
+
+  
+  
+   
+ 

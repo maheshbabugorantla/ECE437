@@ -1,48 +1,32 @@
-/*
-	Mahesh Babu Gorantla
-	mgorantl@purdue.edu
-
-	This the Control unit for the Datapath Module
-*/
-
 `ifndef CONTROL_UNIT_IF_VH
 `define CONTROL_UNIT_IF_VH
 
-// Include types
+// typedefs
 `include "cpu_types_pkg.vh"
 
 interface control_unit_if;
+  // import types
+  import cpu_types_pkg::*;
+	
+        logic [1:0] JumpSel,ALUSel,RegDest;
+	logic dREN, dWEN, halt, zero, branch, jal, imemREN, lui, bne, PCSel, memtoReg, regWEN;	
+	aluop_t aluop;
+	word_t instr, shamt;
+	regbits_t rs, rt, rd;
+	logic [25:0] imm_26;
+	logic [15:0] imm;
+	
 
-	// Import types
-	import cpu_types_pkg::*;
+modport cu (
+	input instr, 
+	output ALUSel, RegDest, JumpSel, aluop, rs, rt, rd, imm, shamt, PCSel, memtoReg, halt, dWEN, dREN, imemREN, lui,jal, bne, regWEN, imm_26	
+);
 
-	// Input Signals
-	logic dhit;
-	word_t imemLoad;
-
-	// Output Signals	
-	logic dREN, dWEN, RegWrite, Branch, halt;
-	logic [1:0] JmpSel;
-	logic [1:0] MemtoReg;
-	logic [1:0] aluSrc;
-	logic [1:0] RegDst;
-	logic [4:0] shamt;
-	logic [4:0] regD;
-	logic [4:0] regT;
-	logic [4:0] regS;
-	aluop_t aluOp; // ALU Op Codes
-
-	modport control_unit (
-			input dhit, imemLoad,
-			output dREN, dWEN, JmpSel, RegWrite, Branch, MemtoReg, aluSrc, RegDst, aluOp, shamt, regD, regS, regT, halt
-		);
-
-	modport tb(
-			input dREN, dWEN, JmpSel, RegWrite, Branch, MemtoReg, aluSrc, RegDst, aluOp, shamt, regD, regS, regT, halt,
-			output dhit, imemLoad
-		);
+modport tb ( 
+	input ALUSel, RegDest, JumpSel, aluop, rs, rt, rd, imm, shamt, PCSel, memtoReg, halt, dWEN, dREN, imemREN, lui,jal, bne, regWEN, imm_26,	
+	output instr
+);
 
 endinterface
-
-
 `endif
+

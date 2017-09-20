@@ -1,152 +1,70 @@
-/*
-	Author: Mahesh Babu Gorantla
-	Class: ECE 437, Fall 2017
-	Description: TestBench to test the Request Unit Functionalities	
-*/
+// mapped needs this
+`include "request_unit_if.vh"
 
-`include "./include/request_unit_if.vh"
-`include "./include/cpu_types_pkg.vh"
-
-import cpu_types_pkg::*;
-
-`timescale 1ns / 1ns
+// mapped timing needs this. 1ns is too fast
+`timescale 1 ns / 1 ns
 
 module request_unit_tb;
 
-	parameter PERIOD = 10; // Clock Period in ns
+  parameter PERIOD = 10;
 
-	logic CLK = 0, nRST;
+  logic CLK = 0, nRST;
 
-	// Clock Generation Block
-	always #(PERIOD / 2) CLK++;
+  // clock
+  always #(PERIOD/2) CLK++;
 
-	// Request Unit Interface
-	request_unit_if ru_dut();
-
-	// Test Program	
-	test PROG(CLK, nRST, ru_dut);
-
-	// DUT
-	`ifndef MAPPED
-		request_unit DUT(CLK, nRST, ru_dut);
-	`else
-		request_unit DUT(
-			.CLK(CLK),
-			.nRST(nRST),
-			.\ruif.ihitIn(ru_dut.ihitIn),
-			.\ruif.dhitIn(ru_dut.dhitIn),
-			.\ruif.dREN(ru_dut.dREN),
-			.\ruif.dWEN(ru_dut.dWEN),
-			.\ruif.dmemREN(ru_dut.dmemREN),
-			.\ruif.dmemWEN(ru_dut.dmemWEN),
-			.\ruif.ihit(ru_dut.ihit),
-			.\ruif.dhit(ru_dut.dhit)
-		);
-	`endif
+  // interface
+  request_unit_if ruif ();
+  // test program
+  test PROG ();
+  // DUT
+`ifndef MAPPED
+  request_unit DUT(CLK, nRST, ruif);
+`else
+  request_unit DUT(
+    .\ruif.dWEN (ruif.dWEN),
+    .\ruif.dREN (ruif.dREN),
+    .\ruif.dhit (ruif.dhit),
+    .\ruif.ihit (ruif.ihit),
+    .\ruif.dmemREN (ruif.dmemREN),
+    .\ruif.dmemWEN (ruif.dmemWEN),
+    .\ruif.PCEN (ruif.PCEN),
+    .\nRST (nRST),
+    .\CLK (CLK)
+  );
+`endif
 
 endmodule
 
-program test(input logic clk, output logic nRST, request_unit_if.tb ru_tb);
-
-	integer test_case_num;
-
-	initial
-	begin
-
-		test_case_num = 1;
-
-		@(posedge clk);
-		@(posedge clk);
-
-		// Checking for Reset
-		nRST = 1'b0;
-
-		@(posedge clk);
-
-		ru_tb.dWEN = 1'b1;
-		ru_tb.dREN = 1'b1;
-		ru_tb.dhitIn = 1'b1;
-		ru_tb.ihitIn = 1'b1;
-
-		if(ru_tb.dmemWEN == 1'b0 && ru_tb.dmemREN == 1'b0 && ru_tb.ihit == 1'b0 && ru_tb.dhit == 1'b0)
-		begin
-			$display("TestCase #%0d Passed", test_case_num);
-		end
-		else
-		begin
-			$display("TestCase #%0d Failed", test_case_num);
-		end
-
-		test_case_num += 1;
-
-		nRST = 1'b1;
-
-		@(posedge clk);
-		@(posedge clk);
-
-		// Checking when dhit = 1'b1
-
-		ru_tb.dWEN = 1'b1;
-		ru_tb.dREN = 1'b1;
-		ru_tb.dhitIn = 1'b1;
-		ru_tb.ihitIn = 1'b1;
-
-		if(ru_tb.dmemWEN == 1'b0 && ru_tb.dmemREN == 1'b0 && ru_tb.ihit == 1'b1 && ru_tb.dhit == 1'b1)
-		begin
-			$display("TestCase #%0d Passed", test_case_num);
-		end
-		else
-		begin
-			$display("TestCase #%0d Failed", test_case_num);
-		end
-
-		@(posedge clk);
-		@(posedge clk);
-
-		// Checking when ihit = 1'b1
-
-		test_case_num += 1;
-
-		ru_tb.dWEN = 1'b1;
-		ru_tb.dREN = 1'b1;
-		ru_tb.dhitIn = 1'b0;
-		ru_tb.ihitIn = 1'b1;
-
-		@(posedge clk);
-
-		if(ru_tb.dmemWEN == 1'b1 && ru_tb.dmemREN == 1'b1 && ru_tb.ihit == 1'b1 && ru_tb.dhit == 1'b0)
-		begin
-			$display("TestCase #%0d Passed", test_case_num);
-		end
-		else
-		begin
-			$display("TestCase #%0d Failed", test_case_num);
-		end
-
-		test_case_num += 1;
-
-		@(posedge clk);
-		@(posedge clk);
-
-		// Checking when ihit = 1'b1
-		ru_tb.dWEN = 1'b1;
-		ru_tb.dREN = 1'b0;
-		ru_tb.dhitIn = 1'b0;
-		ru_tb.ihitIn = 1'b1;
-
-		@(posedge clk);
-
-		if(ru_tb.dmemWEN == 1'b1 && ru_tb.dmemREN == 1'b0 && ru_tb.ihit == 1'b1 && ru_tb.dhit == 1'b0)
-		begin
-			$display("TestCase #%0d Passed", test_case_num);
-		end
-		else
-		begin
-			$display("TestCase #%0d Failed", test_case_num);
-		end
-
-		$finish;
-
+program test;
+parameter DELAY = 10;
+integer i,j,k,l;
+initial begin
+	request_unit_tb.nRST = 0;
+	request_unit_tb.ruif.dWEN = 0;
+	request_unit_tb.ruif.dREN = 0;
+	request_unit_tb.ruif.dhit = 0;
+	request_unit_tb.ruif.ihit = 0;
+	
+	#(DELAY);
+	#(DELAY);
+	request_unit_tb.nRST = 1;
+	#(DELAY);
+	#(DELAY);
+	for(i = 0; i < 2; i++) begin
+	for(j = 0; j < 2; j++) begin
+	for(k = 0; k < 2; k++) begin
+	for(l = 0; l < 2; l++) begin
+		request_unit_tb.ruif.dWEN = i;
+		request_unit_tb.ruif.dREN = j;
+		request_unit_tb.ruif.dhit = k;
+		request_unit_tb.ruif.ihit = l;
+		#(DELAY / 2);
 	end
+	end
+	end
+	end
+$finish;
+end
 
 endprogram
