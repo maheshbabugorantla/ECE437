@@ -16,20 +16,19 @@ interface datapath_cache_if;
 
 // datapath signals
   // stop processing
-  logic halt; // The value in this signal needs to be latched using an another register
+  logic               halt;
 
 // Icache signals
   // hit and enable
-  logic ihit, imemREN;
+  logic               ihit, imemREN;
   // instruction addr
-  word_t imemload, imemaddr;
+  word_t             imemload, imemaddr;
 
 // Dcache signals
   // hit, atomic and enables
-  logic dhit, datomic, dmemREN, dmemWEN, flushed;
-
+  logic               dhit, datomic, dmemREN, dmemWEN, flushed;
   // data and address
-  word_t dmemload, dmemstore, dmemaddr;
+  word_t              dmemload, dmemstore, dmemaddr;
 
   // datapath ports
   modport dp (

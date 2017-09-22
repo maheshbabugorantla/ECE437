@@ -1,50 +1,31 @@
+/* request_unit.sv Zane Johnson */
 
-/*
-	Author: Mahesh Babu Gorantla
-	Email: mgorantl@purdue.edu
-	Lab 4 Single Cycle Datapath
-	Logic for the Request Unit Module
-*/
-
-// Include the Request Unit Interface
+`include "cpu_types_pkg.vh"
 `include "request_unit_if.vh"
 
-// Types
-`include "cpu_types_pkg.vh"
-
 module request_unit (
-	input CLK, nRST,
-	request_unit_if.request_unit ruif
+	input logic CLK,
+	input logic nRST,
+	request_unit_if.ru ruif
 );
 
-	import cpu_types_pkg::*;
+assign ruif.pc_en = ruif.ihit;
 
-	always_ff@(posedge CLK, negedge nRST)
-	begin
-		if(nRST == 1'b0)
-		begin
+import cpu_types_pkg::*;
+always_ff @(posedge CLK, negedge nRST) begin
+	if (nRST == 1'b0) begin
+		ruif.dmemREN <= 1'b0;
+		ruif.dmemWEN <= 1'b0;
+	end
+	else begin
+		if (ruif.ihit == 1'b1) begin
+			ruif.dmemREN <= ruif.dREN;
+			ruif.dmemWEN <= ruif.dWEN;
+		end
+		else if (ruif.dhit == 1'b1) begin	
 			ruif.dmemREN <= 1'b0;
 			ruif.dmemWEN <= 1'b0;
-			ruif.dhit <= 1'b0;
-			ruif.ihit <= 1'b0;
 		end
-		else
-		begin
-			if (ruif.dhitIn == 1'b1)
-			begin
-				ruif.dmemWEN <= 1'b0;
-				ruif.dmemREN <= 1'b0;
-				ruif.dhit <= ruif.dhitIn;
-				ruif.ihit <= ruif.ihitIn;
-			end
-			else if(ruif.ihitIn == 1'b1)
-			begin
-				ruif.dmemWEN <= ruif.dWEN;
-				ruif.dmemREN <= ruif.dREN;
-				ruif.dhit <= ruif.dhitIn;
-				ruif.ihit <= ruif.ihitIn;
-			end
-		end
-	end
-
+	end	
+end
 endmodule
