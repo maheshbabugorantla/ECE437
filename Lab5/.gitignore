@@ -1,21 +1,18 @@
 work
-# mapped
-# fpga
+mapped
+fpga
 transcript
-# Makefile
+Makefile
 modelsim.ini
 *.wlf
-# README
+README
 *.swp
 ._*
 *.log
 .deps
 *.hex
 *.ver
-
 *~
-*/*~
-*.bak
-*/*.bak
-
 *.summary
+*.diff
+wlft*
