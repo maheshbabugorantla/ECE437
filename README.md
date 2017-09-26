@@ -8,5 +8,5 @@
 	-	[X] [Week 4 - Control Unit + Program Counter + Datapath](https://github.com/maheshbabugorantla/ECE437/releases/tag/Lab4)
 -	[ ] [Lab5, Lab6 and Lab7 - Pipeline](https://github.com/maheshbabugorantla/ECE437/tree/master/Lab5)
 	-	[x] [Week 5 - Lab 5 => Pipeline Part I](https://github.com/maheshbabugorantla/ECE437/releases/tag/Lab5)
-	-	[ ] [Week 6 - Lab 6 => Pipeline Part II](https://github.com/maheshbabugorantla/ECE437/releases/tag/Lab6)
+	-	[x] [Week 6 - Lab 6 => Pipeline Part II](https://github.com/maheshbabugorantla/ECE437/releases/tag/Lab6)
 	-	[ ] [Week 7 - Lab 7 => Pipeline Part III](https://github.com/maheshbabugorantla/ECE437/releases/tag/Lab7)
