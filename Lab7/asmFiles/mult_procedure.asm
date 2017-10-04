@@ -1,0 +1,39 @@
+	ORG 0x0000
+	ORI $29, $0, 0xFFFC
+	ORI $28, $0, 0xFFF8
+	#Operands
+	ORI $2, $0, 4
+	PUSH $2
+	ORI $3, $0, 2
+	PUSH $3
+	ORI $4, $0, 3
+	PUSH $4
+	JAL l_begin
+	HALT
+
+l_begin:
+	BEQ $28, $29, l_exit
+	ORI $10, $0, 0 #Result
+	ORI $7, $0, 0 #Increment counter
+	POP $9
+	POP $8
+	
+l_multiply:
+	BNE $8, $7, l_add
+	j l_return
+
+l_add:
+	ADDI $7, $7, 1
+	ADD $10, $10, $9
+	j l_multiply
+	
+l_return:
+	PUSH $10
+	J l_begin
+l_exit:
+	JR $31
+
+	
+
+	
+	

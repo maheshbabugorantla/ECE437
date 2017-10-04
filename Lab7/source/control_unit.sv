@@ -1,0 +1,264 @@
+/* Zane Johnson control_unit.sv */
+
+`include "cpu_types_pkg.vh"
+`include "control_unit_if.vh"
+
+module control_unit (
+	control_unit_if.cu cuif
+);
+
+import cpu_types_pkg::*;
+
+assign cuif.imemREN = 1'b1;
+
+always_comb begin
+	//initialize
+	cuif.shamt = {'0, cuif.instr[10:6]};
+	cuif.imm = cuif.instr[15:0];
+	cuif.imm_26 = cuif.instr[25:0];
+	cuif.rs = cuif.instr[25:21];
+	cuif.rt = cuif.instr[20:16];
+	cuif.rd = cuif.instr[15:11];
+	cuif.PCSel = '0;
+	cuif.memtoReg = '0;
+	cuif.ALUSel = '0;
+	cuif.RegDest = 2'b01;
+	cuif.JumpSel = '0;
+	cuif.regWEN = 1;
+	cuif.jal = '0;
+	cuif.lui = '0;
+	cuif.bne = '0;
+	cuif.halt = '0;
+	cuif.dWEN = '0;
+	cuif.dREN = '0;
+	cuif.aluop = aluop_t'(4'b0000);
+	
+	//jtype 
+	if (cuif.instr[31:26] == J) begin
+		cuif.PCSel = 1;
+		cuif.JumpSel = 2'b01;
+		cuif.RegDest = 2'b10;
+		cuif.regWEN = 0;
+	end
+	else if (cuif.instr[31:26] == JAL) begin
+		cuif.JumpSel = 2'b01;
+		cuif.regWEN = 1;
+		cuif.jal = 1;
+		cuif.RegDest = 2'b10;
+	end
+	//rtype
+	else if (cuif.instr[31:26] == RTYPE) begin
+		if (cuif.instr[5:0] == SLL) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_SLL;
+			cuif.ALUSel = 2'b01;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+
+		end
+		else if (cuif.instr[5:0] == SRL) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_SRL;
+			cuif.ALUSel = 2'b01;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == JR) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.JumpSel = 2'b10;
+			cuif.RegDest = 0;
+			cuif.regWEN = 0;
+			
+		end 
+		else if (cuif.instr[5:0] == ADD || cuif.instr[5:0] == ADDU) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_ADD;
+			cuif.regWEN = 1;	
+			cuif.RegDest = 0;	
+		end 
+		else if (cuif.instr[5:0] == SUB || cuif.instr[5:0] == SUBU) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_SUB;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == AND) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_AND;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == OR) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_OR;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == XOR) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_XOR;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == NOR) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_NOR;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == SLT) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_SLT;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+		else if (cuif.instr[5:0] == SLTU) begin
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.rd = cuif.instr[15:11];
+			cuif.shamt = {'0, cuif.instr[10:6]};
+			cuif.aluop = ALU_SLTU;
+			cuif.regWEN = 1;
+			cuif.RegDest = 0;
+		end 
+	end
+	//itype
+	else begin
+		if (cuif.instr[31:26] == BEQ) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.aluop = ALU_SUB;
+			cuif.PCSel = 1;
+			cuif.JumpSel = 2'b11;
+			cuif.regWEN = 0;
+		end
+		else if (cuif.instr[31:26] == BNE) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.aluop = ALU_SUB;
+			cuif.RegDest = 1;
+			cuif.bne = 1;
+			cuif.PCSel = 1;
+			cuif.JumpSel = 2'b11;
+			cuif.regWEN = 0;
+		end
+		else if (cuif.instr[31:26] == ADDI || cuif.instr[31:26] == ADDIU) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;	
+			cuif.aluop = ALU_ADD;
+			cuif.ALUSel = 2'b10;
+			cuif.regWEN = 1;
+		end
+		else if (cuif.instr[31:26] == SLTI || cuif.instr[31:26] == SLTIU) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.aluop = ALU_SLT;
+			cuif.ALUSel = 1;
+			cuif.regWEN = 1;
+		end		
+		else if (cuif.instr[31:26] == ANDI) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.aluop = ALU_AND;
+			cuif.ALUSel = 2'b11;
+			cuif.regWEN = 1;
+		end
+		else if (cuif.instr[31:26] == ORI) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.aluop = ALU_OR;
+			cuif.ALUSel = 2'b11;
+			cuif.regWEN = 1;
+		end
+		else if (cuif.instr[31:26] == XORI) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.aluop = ALU_XOR;
+			cuif.ALUSel = 2'b11;
+			cuif.regWEN = 1;
+		end
+		else if (cuif.instr[31:26] == LUI) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.lui = 1;
+			cuif.regWEN = 1;
+		end
+		else if (cuif.instr[31:26] == LW) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.dREN = 1;
+			cuif.ALUSel = 2'b10;
+			cuif.aluop = ALU_ADD;
+			cuif.memtoReg = 1;
+			cuif.regWEN = 1;
+		end
+		else if (cuif.instr[31:26] == SW) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.dWEN = 1;
+			cuif.aluop = ALU_ADD;
+			cuif.ALUSel = 2'b10;
+			cuif.regWEN = 0;
+		end
+		else if (cuif.instr[31:26] == HALT) begin 
+			cuif.rs = cuif.instr[25:21];
+			cuif.rt = cuif.instr[20:16];
+			cuif.imm = cuif.instr[15:0];
+			cuif.RegDest = 1;
+			cuif.halt = 1;
+			cuif.regWEN = 0;
+		end
+
+	end
+end
+
+endmodule

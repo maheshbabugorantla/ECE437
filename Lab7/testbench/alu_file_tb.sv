@@ -1,0 +1,318 @@
+// mapped needs this
+`include "alu_file_if.vh"
+
+`include "cpu_types_pkg.vh"
+
+import cpu_types_pkg::*;
+
+// mapped timing needs this. 1ns is too fast
+`timescale 1 ns / 1 ns
+
+module alu_file_tb;
+
+  parameter PERIOD = 10;
+
+  logic CLK = 0;
+
+  // clock
+  always #(PERIOD/2) CLK++;
+
+  // interface
+  alu_file_if myif ();
+  // test program
+  test PROG (CLK, myif.port_a, myif.port_b, myif.aluop, myif.negative, myif.overflow, myif.zero, myif.out);
+  // DUT
+`ifndef MAPPED
+  alu_file DUT(myif);
+`else
+  alu_file DUT(
+    .\myif.port_a (myif.port_a),
+    .\myif.port_b (myif.port_b),
+    .\myif.aluop (myif.aluop),
+    .\myif.negative (myif.negative),
+    .\myif.overflow (myif.overflow),
+    .\myif.zero (myif.zero),
+    .\myif.out (myif.out)
+  );
+`endif
+
+endmodule
+
+program test (input logic CLK, output word_t port_a, output word_t port_b, output aluop_t aluop, input logic negative, input logic overflow, input logic zero, input word_t out);
+	int test_case_cnt = 1;	
+	// test vars
+	
+initial begin
+
+	@(posedge CLK);
+	aluop = ALU_SLL;
+	port_a = 32'b00000000000000001000000000000001;
+	port_b = 32'b00000000000000000000000000000001;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == 32'b00000000000000010000000000000010) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	#3;
+
+	if (overflow == 1'b0 && negative == 1'b0 && zero == 1'b0) begin
+		$display("Flags for Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Flags for Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_SRL;
+	port_a = 32'b00000000000000010000000000000100;
+	port_b = 32'b00000000000000000000000000000010;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == 32'b00000000000000000100000000000001) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	#3;
+
+	if (overflow == 1'b0 && negative == 1'b0 && zero == 1'b0) begin
+		$display("Flags for Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Flags for Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_ADD;
+	port_a = 32'b00000000000000010000000000000100;
+	port_b = 32'b00000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b00000000000000000000000000000011 + 32'b00000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	if (overflow == 1'b0 && negative == 1'b0 && zero == 1'b0) begin
+		$display("Flags for Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Flags for Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	
+	@(posedge CLK);
+	aluop = ALU_ADD;
+	port_a = 32'b10000000000000010000000000000100;
+	port_b = 32'b00000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b00000000000000000000000000000011 + 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+	
+
+	if (overflow == 1'b0 && negative == 1'b1 && zero == 1'b0) begin
+		$display("Flags for Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Flags for Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+		
+	@(posedge CLK);
+	aluop = ALU_ADD;
+	port_b = 32'b10000000000000010000000000000100;
+	port_a = 32'b10000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b10000000000000000000000000000011 + 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	@(posedge CLK);
+
+	if (overflow == 1'b0 && negative == 1'b0 && zero == 1'b0) begin
+		$display("Flags for Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Flags for Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_SUB;
+	port_b = 32'b10000000000000010000000000000100;
+	port_a = 32'b10000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b10000000000000000000000000000011 - 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	
+	@(posedge CLK);
+	aluop = ALU_AND;
+	port_a = 32'b10000000000000010000000000000100;
+	port_b = 32'b10000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b10000000000000000000000000000011 & 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_OR;
+	port_a = 32'b10000000000000010000000000000100;
+	port_b = 32'b10000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b10000000000000000000000000000011 | 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_XOR;
+	port_a = 32'b10000000000000010000000000000100;
+	port_b = 32'b10000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == (32'b10000000000000000000000000000011 ^ 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_NOR;
+	port_a = 32'b10000000000000010000000000000100;
+	port_b = 32'b10000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == ~(32'b10000000000000000000000000000011 | 32'b10000000000000010000000000000100)) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_SLT;
+	port_a = 32'b00000000000000010000000000000100;
+	port_b = 32'b00000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == 0) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_SLT;
+	port_b = 32'b00000000000000010000000000000100;
+	port_a = 32'b00000000000000000000000000000011;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == 1) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+	@(posedge CLK);
+	aluop = ALU_SLTU;
+	port_a = 3;
+	port_b = -1;
+
+	@(posedge CLK);
+	@(negedge CLK);
+	
+	if (out == 1) begin 
+		$display("Test Case %1d Passed at %0t", test_case_cnt, $time);
+	end
+	else begin
+		$display("Test Case %1d Failed at %0t", test_case_cnt, $time);	 
+	end
+
+	test_case_cnt = test_case_cnt + 1;
+
+end	
+
+endprogram
